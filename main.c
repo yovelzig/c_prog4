@@ -637,17 +637,8 @@ int main()
         }
         else if (c == 'T')
         {
-
             TSP_cmd(*head);
-            break;
         }
-        // else
-        // {
-        //     printf("LKJHGFD\n");
-        //     break;
-        //     // deleteGraph_cmd(head);
-        //     // free(head);
-        // }
     }
     deleteGraph_cmd(head);
     free(head);

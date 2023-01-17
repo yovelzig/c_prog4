@@ -348,84 +348,14 @@ void shortsPath_cmd(pnode head)
 
     if (pTheOne->distance == INT_MAX)
     {
-        printf("Dijsktra shortest path: %d\n", -1);
+        printf("Dijsktra shortest path: %d \n", -1);
     }
     else
     {
-        printf("Dijsktra shortest path: %d\n", pTheOne->distance);
+        printf("Dijsktra shortest path: %d \n", pTheOne->distance);
     }
     return;
 }
-/******************/
-/*****************/
-// int shortsPathForTsp(pnode head, int src, int dest)
-// {
-//     pnode p = head;
-//     pedge eList = NULL;
-//     pedge prev = NULL;
-//     while (p != NULL)
-//     {
-//         if (p->node_num == src)
-//         {
-//             p->distance = 0;
-//         }
-//         else
-//         {
-//             p->distance = INT_MAX;
-//         }
-//         if (p->edges != NULL)
-//         {
-//             pedge e = p->edges;
-//             while (e != NULL)
-//             {
-//                 if (eList == NULL)
-//                 {
-//                     eList = e;
-//                 }
-//                 else
-//                 {
-//                     prev->nextB = e;
-//                 }
-//                 prev = e;
-//                 e->source = p;
-//                 e = e->next;
-//             }
-//         }
-//         p = p->next;
-//     }
-//     p = head;
-//     while (p != NULL)
-//     {
-//         pedge e = eList;
-//         while (e != NULL)
-//         {
-//             pnode u = e->source;
-//             pnode v = e->endpoint;
-//             int uDist = u->distance;
-//             int vDist = v->distance;
-//             int weight = e->weight;
-//             if ((uDist != INT_MAX) && (uDist + weight < vDist))
-//                 v->distance = uDist + weight;
-//             e = e->nextB;
-//         }
-//         p = p->next;
-//     }
-//     pnode pTheOne = head;
-//     // printGraph_cmd(head);
-//     while (pTheOne->node_num != dest)
-//     {
-//         pTheOne = pTheOne->next;
-//     }
-
-//     if (pTheOne->distance == INT_MAX)
-//     {
-//         return INT_MAX;
-//     }
-//     else
-//     {
-//         return pTheOne->distance;
-//     }
-// }
 /*******************/
 /*****************/
 void belman_ford(pnode head, int sourceP)

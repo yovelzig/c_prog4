@@ -16,6 +16,7 @@ void free_edgeFrom(pnode *head, pnode des_point)
             pedge curr_e = e;
             p->edges = e->next;
             free(curr_e);
+            curr_e = NULL;
         }
         else
         {
@@ -26,6 +27,7 @@ void free_edgeFrom(pnode *head, pnode des_point)
                     pedge curr_e = e->next;
                     e->next = e->next->next;
                     free(curr_e);
+                    curr_e = NULL;
                 }
                 else
                 {
@@ -46,6 +48,7 @@ void free_node(pnode delete_node)
         pedge temp = curr_edge;
         curr_edge = curr_edge->next;
         free(temp);
+        temp=NULL;
     }
     free(delete_node);
 }
@@ -138,18 +141,18 @@ pnode new_node(int num, struct GRAPH_NODE_ *next)
 void free_edges(pnode edge_fr)
 {
     pedge e = edge_fr->edges;
-    pedge e1 = edge_fr->edges;
+    // pedge e1 = edge_fr->edges;
     while (e != NULL)
     {
         pedge tmp = e;
         e = e->next;
         free(tmp);
-        if (e1 != NULL)
-        {
-            pedge tmp1 = e1;
-            e1 = e1->nextB;
-            free(tmp1);
-        }
+        // if (e1 != NULL)
+        // {
+        //     pedge tmp1 = e1;
+        //     e1 = e1->nextB;
+        //     free(tmp1);
+        // }
     }
     edge_fr->edges = NULL;
 }
@@ -240,8 +243,10 @@ void delete_node_cmd(pnode *head)
     if (p == NULL)
     {
         pnode b = *head;
+        printf("ddd\n");
         free_edgeFrom(head, b);
         free_node(b);
+        printf("fff\n");
         *head = (*head)->next;
     }
     else
@@ -563,6 +568,7 @@ int main()
         else if (c == 'D')
         {
             delete_node_cmd(head);
+            scanf("%c",&c);
             // break;
         }
         else if (c == 'P')

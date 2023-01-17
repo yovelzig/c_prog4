@@ -2,40 +2,30 @@
 #include <stdlib.h>
 #include "graph.h"
 #include <limits.h>
-
-/********************/
+/**************/
 // free edges from node
 void free_edgeFrom(pnode *head, pnode des_point)
 {
-    pnode p = *head;
-    while (p != NULL)
+    pedge e = (*head)->edges;
+    pedge prev = NULL;
+    while (e != NULL && e->endpoint != des_point)
     {
-        pedge e = p->edges;
-        if (e != NULL && e->endpoint == des_point)
+        prev = e;
+        e = e->next;
+    }
+    if (e != NULL)
+    {
+        if (prev != NULL)
         {
-            pedge curr_e = e;
-            p->edges = e->next;
-            free(curr_e);
-            curr_e = NULL;
+            prev->next = e->next;
         }
         else
         {
-            while (e != NULL && e->next != NULL)
-            {
-                if (e->next->endpoint == des_point)
-                {
-                    pedge curr_e = e->next;
-                    e->next = e->next->next;
-                    free(curr_e);
-                    curr_e = NULL;
-                }
-                else
-                {
-                    e = e->next;
-                }
-            }
+            (*head)->edges = e->next;
         }
-        p = p->next;
+        e->nextB = NULL;
+        e->endpoint = NULL;
+        free(e);
     }
 }
 /*************************/
@@ -48,7 +38,7 @@ void free_node(pnode delete_node)
         pedge temp = curr_edge;
         curr_edge = curr_edge->next;
         free(temp);
-        temp=NULL;
+        temp = NULL;
     }
     free(delete_node);
 }
@@ -228,9 +218,7 @@ void deleteGraph_cmd(pnode *head)
     pnode p = *head;
     while (p != NULL)
     {
-        pnode tmp = p;
-        p = p->next;
-        free_node(tmp);
+        delete_node_cmd(&p);
     }
 }
 /*******************/
@@ -239,20 +227,64 @@ void delete_node_cmd(pnode *head)
 {
     int node_toDel;
     scanf("%d", &node_toDel);
-    pnode p = findNodePrev(node_toDel, head);
-    if (p == NULL)
+    pnode p = findNode(node_toDel, head);
+    pnode curr = *head;
+    while (curr != NULL)
     {
-        pnode b = *head;
-        free_edgeFrom(head, b);
-        free_node(b);
-        *head = (*head)->next;
+        pedge e = curr->edges;
+
+        while (e != NULL)
+        {
+            e->nextB = NULL;
+            e = e->next;
+        }
+        free_edgeFrom(&curr, p);
+        curr = curr->next;
     }
-    else
+    curr = *head;
+    pnode prev = *head;
+    while (curr != NULL && (curr->node_num != node_toDel))
     {
-        pnode k = p->next;
-        free_edgeFrom(head, k);
-        p->next = p->next->next;
-        free_node(k);
+        prev = curr;
+        curr = curr->next;
+    }
+    if (curr != NULL)
+    {
+        if (curr->node_num == (*head)->node_num)
+        {
+            *head = curr->next;
+        }
+        else
+        {
+            prev->next = curr->next;
+        }
+    }
+    if (curr != NULL)
+    {
+        pedge first = curr->edges;
+        //////
+        while (first != NULL && first->next != NULL)
+        {
+            pedge e = first;
+            pedge prev_edge = first;
+            while (e->next != NULL)
+            {
+                prev_edge = e;
+                e = e->next;
+            }
+            prev_edge->next = NULL;
+            e->endpoint = NULL;
+            e->source = NULL;
+            e->nextB = NULL;
+            free(e);
+        }
+        p->edges = NULL;
+        p->next = NULL;
+        if (first != NULL)
+            first->endpoint = NULL;
+
+        free(first);
+        free(p);
     }
 }
 /*****************/
@@ -566,7 +598,7 @@ int main()
         else if (c == 'D')
         {
             delete_node_cmd(head);
-            scanf("%c",&c);
+            scanf("%c", &c);
             // break;
         }
         else if (c == 'P')

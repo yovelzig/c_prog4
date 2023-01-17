@@ -399,6 +399,7 @@ void belman_ford(pnode head, int sourceP)
     pnode p = head;
     pedge eList = NULL;
     pedge prev = NULL;
+    int uDist, vDist, weight;
     while (p != NULL)
     {
         if (p->node_num == sourceP)
@@ -436,9 +437,9 @@ void belman_ford(pnode head, int sourceP)
         {
             pnode u = e->source;
             pnode v = e->endpoint;
-            int uDist = u->distance;
-            int vDist = v->distance;
-            int weight = e->weight;
+            uDist = u->distance;
+            vDist = v->distance;
+            weight = e->weight;
             if ((uDist != INT_MAX) && (uDist + weight < vDist))
                 v->distance = uDist + weight;
             e = e->nextB;
@@ -618,6 +619,6 @@ int main()
         }
     }
     deleteGraph_cmd(head);
-    // free(head);
+    free(head);
     return 0;
 }

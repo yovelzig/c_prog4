@@ -368,6 +368,7 @@ void shortsPath_cmd(pnode head)
 {
     int src;
     int dest;
+    int count = 0;
     if (scanf(" %d", &src) != 1)
     {
         return;
@@ -376,7 +377,6 @@ void shortsPath_cmd(pnode head)
     {
         return;
     }
-    // Initialize distances and edges for nodes
     pnode p = head;
     pedge linked = NULL;
     pedge prev = NULL;
@@ -406,6 +406,7 @@ void shortsPath_cmd(pnode head)
                 prev = e;
                 e->source = p;
                 e = e->next;
+                count++;
             }
         }
         p = p->next;
@@ -414,8 +415,10 @@ void shortsPath_cmd(pnode head)
     while (p != NULL)
     {
         pedge e = linked;
-        while (e != NULL)
+        for (int i = 0; i < count; i++)
         {
+            // while (e != NULL)
+            // {
             pnode u = e->source;
             pnode v = e->endpoint;
             int distA = u->distance;
@@ -449,7 +452,7 @@ void algo(pnode head, int sourceP)
 {
     pnode p = head;
     int numOfNodes = 0;
-    int count=0;
+    int count = 0;
     if (head == NULL)
     {
         return;
@@ -459,12 +462,12 @@ void algo(pnode head, int sourceP)
         while (p != NULL)
         {
             numOfNodes++;
-            p=p->next;
+            p = p->next;
         }
     }
     pedge linked = NULL;
     pedge prev = NULL;
-        p=head;
+    p = head;
     for (int i = 0; i < numOfNodes; i++)
     {
         if (p->node_num == sourceP)
@@ -495,10 +498,10 @@ void algo(pnode head, int sourceP)
         p = p->next;
     }
     for (int j = 0; j < numOfNodes; j++)
-    {  
+    {
         pedge e = linked;
-    for (int i = 0; i < count; i++)
-    {   
+        for (int i = 0; i < count; i++)
+        {
             pnode u = e->source;
             pnode v = e->endpoint;
             int distA = u->distance;
@@ -507,7 +510,7 @@ void algo(pnode head, int sourceP)
             if ((distA != INT_MAX) && (distA + weight < distB))
                 v->distance = distA + weight;
             e = e->nextB;
-    }
+        }
     }
 }
 

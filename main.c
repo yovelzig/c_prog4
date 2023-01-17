@@ -137,12 +137,6 @@ void free_edges(pnode edge_fr)
         pedge tmp = e;
         e = e->next;
         free(tmp);
-        // if (e1 != NULL)
-        // {
-        //     pedge tmp1 = e1;
-        //     e1 = e1->nextB;
-        //     free(tmp1);
-        // }
     }
     edge_fr->edges = NULL;
 }
@@ -215,10 +209,73 @@ void build_graph_cmd(pnode *head)
 // delete graph
 void deleteGraph_cmd(pnode *head)
 {
-    pnode p = *head;
-    while (p != NULL)
+    // pnode p = *head;
+    while ((*head) != NULL)
     {
-        delete_node_cmd(&p);
+        delete_nodeForGraph(head, (*head)->node_num);
+    }
+}
+/*******************/
+// delete node
+void delete_nodeForGraph(pnode *head, int node_toDel)
+{
+    pnode p = findNode(node_toDel, head);
+    pnode curr = *head;
+    while (curr != NULL)
+    {
+        pedge e = curr->edges;
+
+        while (e != NULL)
+        {
+            e->nextB = NULL;
+            e = e->next;
+        }
+        free_edgeFrom(&curr, p);
+        curr = curr->next;
+    }
+    curr = *head;
+    pnode prev = *head;
+    while (curr != NULL && (curr->node_num != node_toDel))
+    {
+        prev = curr;
+        curr = curr->next;
+    }
+    if (curr != NULL)
+    {
+        if (curr->node_num == (*head)->node_num)
+        {
+            *head = curr->next;
+        }
+        else
+        {
+            prev->next = curr->next;
+        }
+    }
+    if (curr != NULL)
+    {
+        pedge first = curr->edges;
+        //////
+        while (first != NULL && first->next != NULL)
+        {
+            pedge e = first;
+            pedge prev_edge = first;
+            while (e->next != NULL)
+            {
+                prev_edge = e;
+                e = e->next;
+            }
+            prev_edge->next = NULL;
+            e->endpoint = NULL;
+            e->source = NULL;
+            e->nextB = NULL;
+            free(e);
+        }
+        p->edges = NULL;
+        p->next = NULL;
+        if (first != NULL)
+            first->endpoint = NULL;
+        free(first);
+        free(p);
     }
 }
 /*******************/
@@ -282,7 +339,6 @@ void delete_node_cmd(pnode *head)
         p->next = NULL;
         if (first != NULL)
             first->endpoint = NULL;
-
         free(first);
         free(p);
     }
@@ -322,7 +378,7 @@ void shortsPath_cmd(pnode head)
     }
     // Initialize distances and edges for nodes
     pnode p = head;
-    pedge eList = NULL;
+    pedge linked = NULL;
     pedge prev = NULL;
     while (p != NULL)
     {
@@ -339,9 +395,9 @@ void shortsPath_cmd(pnode head)
             pedge e = p->edges;
             while (e != NULL)
             {
-                if (eList == NULL)
+                if (linked == NULL)
                 {
-                    eList = e;
+                    linked = e;
                 }
                 else
                 {
@@ -354,22 +410,19 @@ void shortsPath_cmd(pnode head)
         }
         p = p->next;
     }
-    // printf("finished initiation 45 \n");
-
-    // // Relax edges repeatedly
     p = head;
     while (p != NULL)
     {
-        pedge e = eList;
+        pedge e = linked;
         while (e != NULL)
         {
             pnode u = e->source;
             pnode v = e->endpoint;
-            int uDist = u->distance;
-            int vDist = v->distance;
+            int distA = u->distance;
+            int distB = v->distance;
             int weight = e->weight;
-            if ((uDist != INT_MAX) && (uDist + weight < vDist))
-                v->distance = uDist + weight;
+            if ((distA != INT_MAX) && (distA + weight < distB))
+                v->distance = distA + weight;
             e = e->nextB;
         }
         p = p->next;
@@ -391,16 +444,28 @@ void shortsPath_cmd(pnode head)
     }
     return;
 }
-/*******************/
 /*****************/
-void belman_ford(pnode head, int sourceP)
+void algo(pnode head, int sourceP)
 {
-    // initialization of added arrtibutes
     pnode p = head;
-    pedge eList = NULL;
+    int numOfNodes = 0;
+    int count=0;
+    if (head == NULL)
+    {
+        return;
+    }
+    else
+    {
+        while (p != NULL)
+        {
+            numOfNodes++;
+            p=p->next;
+        }
+    }
+    pedge linked = NULL;
     pedge prev = NULL;
-    int uDist, vDist, weight;
-    while (p != NULL)
+        p=head;
+    for (int i = 0; i < numOfNodes; i++)
     {
         if (p->node_num == sourceP)
         {
@@ -415,8 +480,8 @@ void belman_ford(pnode head, int sourceP)
             pedge e = p->edges;
             while (e != NULL)
             {
-                if (eList == NULL)
-                    eList = e;
+                if (linked == NULL)
+                    linked = e;
                 else
                 {
                     prev->nextB = e;
@@ -424,30 +489,29 @@ void belman_ford(pnode head, int sourceP)
                 prev = e;
                 e->source = p;
                 e = e->next;
+                count++;
             }
         }
         p = p->next;
     }
-    // Relax edges repeatedly
-    p = head;
-    while (p != NULL)
-    {
-        pedge e = eList;
-        while (e != NULL)
-        {
+    for (int j = 0; j < numOfNodes; j++)
+    {  
+        pedge e = linked;
+    for (int i = 0; i < count; i++)
+    {   
             pnode u = e->source;
             pnode v = e->endpoint;
-            uDist = u->distance;
-            vDist = v->distance;
-            weight = e->weight;
-            if ((uDist != INT_MAX) && (uDist + weight < vDist))
-                v->distance = uDist + weight;
+            int distA = u->distance;
+            int distB = v->distance;
+            int weight = e->weight;
+            if ((distA != INT_MAX) && (distA + weight < distB))
+                v->distance = distA + weight;
             e = e->nextB;
-        }
-        p = p->next;
+    }
     }
 }
-int permute(pnode *arr, int start, int end, int *distances, pnode *arrOriginal)
+
+int permution(pnode *arr, int start, int end, int *distances, pnode *arrOriginal)
 {
     int i;
     if (start == end)
@@ -496,7 +560,7 @@ int permute(pnode *arr, int start, int end, int *distances, pnode *arrOriginal)
         arr[i] = temp;
 
         // recursively permute the remaining elements
-        int num = permute(arr, start + 1, end, distances, arrOriginal);
+        int num = permution(arr, start + 1, end, distances, arrOriginal);
         if (num < sum)
             sum = num;
         // swap the elements back
@@ -506,14 +570,13 @@ int permute(pnode *arr, int start, int end, int *distances, pnode *arrOriginal)
     }
     return sum;
 }
-
 void TSP_cmd(pnode head)
 {
     int i;
     int result = scanf(" %d", &i);
     if (result != 1)
     {
-        printf("Invalid input\n");
+        printf("error in input\n");
         return;
     }
     // printf("21. got digit from input: %d\n", i);
@@ -526,7 +589,7 @@ void TSP_cmd(pnode head)
         result = scanf(" %d", &i);
         if (result != 1)
         {
-            printf("Invalid input\n");
+            printf("error in input\n");
             return;
         }
         // printf("22. got digit from input: %d\n", i);
@@ -543,13 +606,13 @@ void TSP_cmd(pnode head)
     int *distances = (int *)malloc(length * length * sizeof(int));
     for (int j = 0; j < length; j++)
     {
-        belman_ford(head, arr[j]->node_num);
+        algo(head, arr[j]->node_num);
         for (int k = 0; k < length; k++)
         {
             *(distances + j * length + k) = arr[k]->distance;
         }
     }
-    int min = permute(arr, 0, length - 1, distances, arrOriginal);
+    int min = permution(arr, 0, length - 1, distances, arrOriginal);
     if (min == INT_MAX)
         printf("TSP shortest path: %d \n", -1);
     else
@@ -562,28 +625,28 @@ void TSP_cmd(pnode head)
 int main()
 {
     char c = 'z';
-    int flag = 1;
-    pnode *head = (pnode *)malloc(sizeof(node));
+    // int flag = 1;
+    pnode *head = (pnode *)calloc(1, sizeof(node));
+    (*head) = new_node(0, NULL);
     while (1)
     {
         scanf("%c", &c);
-        // printf("%c\n", c);
         if (getchar() == EOF)
         {
             break;
         }
         else if (c == 'A')
         {
-            if (flag == 1)
-            {
-                build_graph_cmd(head);
-                flag = 0;
-            }
-            else
-            {
-                deleteGraph_cmd(head);
-                build_graph_cmd(head);
-            }
+            // if (flag == 1)
+            // {
+            //     build_graph_cmd(head);
+            //     flag = 0;
+            // }
+            // else
+            // {
+            deleteGraph_cmd(head);
+            build_graph_cmd(head);
+            // }
             // break;
         }
         else if (c == 'n')

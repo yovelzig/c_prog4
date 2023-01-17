@@ -21,6 +21,7 @@ void delete_node_cmd(pnode *head);
 void deleteGraph_cmd(pnode *head);
 void build_graph_cmd(pnode *head);
 void insert_node_cmd(pnode *head);
+void delete_nodeForGraph(pnode *head,int node_toDel);
 void free_edges(pnode edge_fr);
 pnode new_node(int num, struct GRAPH_NODE_ *next);
 pnode findNode(int name, pnode *head);

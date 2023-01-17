@@ -243,10 +243,8 @@ void delete_node_cmd(pnode *head)
     if (p == NULL)
     {
         pnode b = *head;
-        printf("ddd\n");
         free_edgeFrom(head, b);
         free_node(b);
-        printf("fff\n");
         *head = (*head)->next;
     }
     else
